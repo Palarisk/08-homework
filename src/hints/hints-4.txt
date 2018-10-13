@@ -105,7 +105,7 @@ We did the circles thing in class. Just make a new variable of the ones you'd li
 
 
 
-Hmmm, there isn't the same number of text elements as bands. It's probably easiest to just make a THIRD dataset of which degree labels you want.
+ Hmmm, there isn't the same number of text elements as bands. It's probably easiest to just make a THIRD dataset of which degree labels you want.
 
 
 

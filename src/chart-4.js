@@ -12,10 +12,94 @@ var svg = d3
   .append('g')
   .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
+let radius = 130
+
+let radiusScale = d3
+  .scaleLinear()
+  .domain([0, 70])
+  .range([0, radius])
+
+let months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sept',
+  'Oct',
+  'Nov',
+  'Dec'
+]
+
+var angleScale = d3
+  .scaleBand()
+  .domain(months)
+  .range([0, Math.PI * 2])
+
+var line = d3
+  .radialArea()
+  .innerRadius(d => radiusScale(d.low_temp))
+  .outerRadius(d => radiusScale(d.high_temp))
+  .angle(d => angleScale(d.month_name))
+  .curve(d3.curveBasis)
+
 d3.csv(require('./data/ny-temps.csv'))
   .then(ready)
   .catch(err => console.log('Failed on', err))
 
 function ready(datapoints) {
+ datapoints.push(datapoints[0])
+
+  var holder = svg
+    .append('g')
+    // .attr('transform', 'translate(200,200)')
+    .attr('transform', `translate(${width / 2},${height / 2})`)
+
+  holder
+    .append('path')
+    .datum(datapoints)
+    .attr('d', line)
+    // .attr('fill', 'rgba(255, 0, 0, 0.5)')
+    .attr('fill', 'lightblue')
+    .attr('opacity', 0.5)
+    .attr('stroke', 'none')
+
+  let bands = [20, 30, 40, 50, 60, 70, 80, 90]
+
+  holder
+    .selectAll('.scale-band')
+    .data(bands)
+    .enter()
+    .append('circle')
+    .attr('r', d => radiusScale(d))
+    .attr('fill', 'none')
+    .attr('stroke', 'lightgrey')
+    .attr('cx', 0)
+    .attr('cy', 0)
+    .lower()
+
+  let bandsText = [30, 50, 70, 90]
+
+  holder
+    .selectAll('.scale-text')
+    .data(bandsText)
+    .enter()
+    .append('text')
+    .text(d => d + '°')
+    .attr('text-anchor', 'middle')
+    .attr('x', 0)
+    .attr('y', d => -radiusScale(d))
+    .attr('dy', -3)
+
+  holder
+    .append('text')
+    .text('NYC')
+    .attr('text-anchor', 'middle')
+    .attr('y', 7)
+    .attr('font-size', 22)
+    .attr("font-weight", "600")
 
 }

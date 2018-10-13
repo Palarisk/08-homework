@@ -1,3 +1,5 @@
+
+
 import * as d3 from 'd3'
 
 var margin = { top: 30, left: 30, right: 30, bottom: 30 }
@@ -27,10 +29,11 @@ var arc = d3
   .innerRadius(0)
   .outerRadius(radius)
 
-
 var colorScale = d3.scaleOrdinal().range(['#99FFCC', '#CCCCFF', '#FFB266'])
 
-var xPositionScale = d3.scalePoint().range([margin.left*2, width - margin.left - margin.right])
+var xPositionScale = d3
+  .scalePoint()
+  .range([margin.left * 2, width - margin.left - margin.right])
 
 d3.csv(require('./data/time-breakdown-all.csv'))
   .then(ready)
@@ -56,30 +59,34 @@ function ready(datapoints) {
     .data(pie(nested))
     .enter()
     .append('g')
-    //.attr('d', d => arc(d))
-    //.attr('fill', d => colorScale(d.data.task))
+    // .attr('d', d => arc(d))
+    // .attr('fill', d => colorScale(d.data.task))
     .attr('transform', function(d) {
-      //console.log(d.data.key)
-      return `translate(${xPositionScale(d.data.key)}, ${height/2})`
+      // console.log(d.data.key)
+      return `translate(${xPositionScale(d.data.key)}, ${height / 2})`
     })
 
     .each(function(d) {
       // which svg are we looking at?
       var svg = d3.select(this)
-      //console.log(d)
-
+    // console.log(d)
 
       svg
         .selectAll('path')
-        .data(pie(datapoints))
+        .data(pie(d.data.values))
         .enter()
         .append('path')
         .attr('d', d => arc(d))
         .attr('fill', d => colorScale(d.data.task))
 
-
+      svg
+        .append('text')
+        .text(d.data.key)
+        .attr('x', 0)
+        .attr('y', 110)
+        .attr('font-size', 12)
+        .attr('text-anchor', 'middle')
 
 
     })
-
 }
